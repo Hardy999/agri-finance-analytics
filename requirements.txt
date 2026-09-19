@@ -1,0 +1,48 @@
+# =============================================================================
+# requirements.txt  —  Agri-Finance Analytics
+#
+# These are RANGE pins: a floor and a ceiling on each package.
+#
+# The history of this file matters, so it is recorded here.
+#
+#   It began as minimum-only pins ("pandas>=2.2"), on the reasoning that
+#   guessing exact version numbers before installing anything risks naming a
+#   version that does not exist, which makes `pip install` fail on a fresh
+#   clone — the exact failure the file is supposed to prevent.
+#
+#   That reasoning was sound. The execution was not. ">=2.2" has no upper
+#   bound, so pip installed the newest release it could find: pandas 3.0.6,
+#   a MAJOR version ahead of what was intended. Major versions are where
+#   breaking changes are allowed to live. Nothing broke here, but it could
+#   have, and nobody chose it.
+#
+#   Corrected 19 September 2026 to ">=3.0,<4" form, which says what was
+#   actually meant: this major version, any patch or minor release within it.
+#
+# The floor states the oldest release the project is known to work with.
+# The ceiling stops the next major version installing itself unannounced.
+# requirements.lock.txt still records the exact versions that ran, which is
+# what you reproduce from. This file is what you READ to see the intent.
+# =============================================================================
+
+# --- Core data handling ------------------------------------------------------
+pandas>=3.0,<4         # tabular data: the CSVs, the cleaning, the joins
+numpy>=2.5,<3            # numeric operations underneath pandas
+
+# --- Getting the data --------------------------------------------------------
+requests>=2.31,<3         # downloading source files over HTTPS in Phase 1
+openpyxl>=3.1,<4          # reading .xlsx sources (FAOSTAT and BoG publish these)
+
+# --- Database ----------------------------------------------------------------
+SQLAlchemy>=2.0,<3        # builds the connection and runs queries from Python
+pyodbc>=5.0,<6            # the actual driver SQLAlchemy uses to reach SQL Server
+                       # NOTE: pyodbc needs the Microsoft ODBC Driver for SQL
+                       # Server installed on Windows separately. If the import
+                       # works but connecting fails, that driver is the cause.
+
+# --- Exploration -------------------------------------------------------------
+jupyterlab>=4.0,<5        # the Phase 2 profiling notebook
+matplotlib>=3.8,<4        # charts during profiling (Power BI handles the final ones)
+
+# --- Config ------------------------------------------------------------------
+python-dotenv>=1.0,<2     # reads local settings without hard-coding them in scripts

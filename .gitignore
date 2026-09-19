@@ -1,0 +1,144 @@
+# =============================================================================
+# .gitignore  —  Agri-Finance Analytics
+#
+# Git tracks every file in this folder unless a pattern here tells it not to.
+# Read this file before the first commit. Once a large file is in Git history
+# it stays there even after you delete it, and removing it means rewriting
+# history — which is painful and easy to get wrong.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# 1. DATA
+# -----------------------------------------------------------------------------
+# Raw data is excluded for three separate reasons, any one of which is enough:
+#   (a) Size. Git stores a full copy of every version of every file. A 200 MB
+#       CSV that changes three times is 600 MB of repository, forever.
+#   (b) Licence. Some public datasets permit reuse but not redistribution.
+#       Linking to the source in SOURCES.md is always safe; re-hosting is not.
+#   (c) Reproducibility is the point. If someone must run the ingestion script
+#       to get the data, then the ingestion script is proven to work. If the
+#       data is committed, a broken script can sit unnoticed for months.
+#
+# The pattern excludes the CONTENTS of the folder, not the folder itself,
+# which is why the .gitkeep negation below works.
+data/raw/*
+!data/raw/.gitkeep
+
+data/interim/*
+!data/interim/.gitkeep
+
+data/clean/*
+!data/clean/.gitkeep
+
+
+# -----------------------------------------------------------------------------
+# 2. PYTHON
+# -----------------------------------------------------------------------------
+# __pycache__ holds compiled bytecode. It is generated automatically, it is
+# machine-specific, and committing it creates merge conflicts in files no
+# human ever reads.
+__pycache__/
+*.py[cod]
+
+# The virtual environment. This can be thousands of files and hundreds of MB,
+# and it is rebuildable from requirements.txt in one command. Committing it
+# is the single most common beginner mistake in a Python repo.
+.venv/
+venv/
+env/
+*.egg-info/
+
+
+# -----------------------------------------------------------------------------
+# 3. NOTEBOOKS
+# -----------------------------------------------------------------------------
+# Jupyter's autosave directory. Not the notebooks themselves — those ARE
+# committed, because the profiling notebook is a deliverable of Phase 2.
+.ipynb_checkpoints/
+
+
+# -----------------------------------------------------------------------------
+# 4. SECRETS AND LOCAL CONFIG
+# -----------------------------------------------------------------------------
+# config.ini holds the database connection for THIS machine. It is excluded
+# for two reasons: it may contain a password, and even without one the server
+# name is specific to your laptop and would break on anyone else's.
+#
+# config.example.ini IS committed. It has the same structure with the values
+# blanked out, so a stranger cloning the repo knows what to fill in.
+config.ini
+.env
+
+
+# -----------------------------------------------------------------------------
+# 5. OFFICE AND OS CLUTTER
+# -----------------------------------------------------------------------------
+# Word and Excel create hidden lock files starting with ~$ while a file is
+# open. They are meaningless outside your session. This matters here because
+# the phase documents are .docx files sitting inside the repo.
+~$*
+
+# Windows and OneDrive folder metadata. desktop.ini in particular is created
+# by OneDrive in synced folders and would otherwise be committed by accident.
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor settings. Personal preference, not project configuration.
+.vscode/
+.idea/
+
+# The Claude desktop app drops copies of files it delivers into the chat here.
+# They are duplicates of files that already live in the repo (the phase
+# documents), so committing them would track the same content twice and the
+# two copies would drift. Added 19 September 2026 after the folder appeared
+# during Phase 0.
+Claude outputs/
+
+
+# -----------------------------------------------------------------------------
+# 7. PHASE DOCUMENTS  —  a decision, not a default
+# -----------------------------------------------------------------------------
+# The phase write-ups in phases/ are deliberately NOT published.
+#
+# The reasoning, recorded because the opposite choice is also defensible:
+# these documents are only valuable if they record the work honestly, wrong
+# turns included. A document written knowing strangers will read it gets
+# tidied, and a tidied log is worthless as a record of how the work actually
+# went. Keeping them private protects the candour.
+#
+# The public version is not abandoned — at Phase 7 a "how this was built"
+# document is written in markdown, drawn from these nine logs and edited for
+# an audience. That gets the differentiator without the self-censorship.
+#
+# Decided 19 September 2026. If this is ever reversed, note that the logs
+# were written under the assumption of privacy.
+#
+# NOTE the leading slash. A bare "phases/" matches a directory of that name at
+# ANY depth, which would also have swallowed docs/phases/. The leading slash
+# anchors the pattern to the repository root, so it means this one folder and
+# nothing else. Caught by a check, not by reading the line back.
+/phases/
+
+
+# -----------------------------------------------------------------------------
+# 6. POWER BI  —  a decision, not a default
+# -----------------------------------------------------------------------------
+# .pbix files are NOT ignored. The dashboard is part of the portfolio and a
+# reviewer should be able to open it.
+#
+# But there is a trap, and it is worth understanding before Phase 6:
+# a .pbix built with Import mode embeds a compressed copy of the data inside
+# the file. Commit that and the raw data enters the repo through the back
+# door — defeating section 1 entirely, and possibly breaching a licence.
+#
+# The mitigation is to connect Power BI to SQL Server with DirectQuery or a
+# Live connection, so the .pbix holds only the model and the visuals.
+# Check the file size before committing. If it is more than a few MB, the
+# data is inside it and you need to look at the connection mode again.
+#
+# If it turns out Import mode is unavoidable, uncomment the next line and
+# say so in the README — an excluded dashboard with a stated reason is
+# honest; an accidentally committed 80 MB file is not.
+# powerbi/*.pbix
