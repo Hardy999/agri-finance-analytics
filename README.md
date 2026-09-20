@@ -61,17 +61,58 @@ where each file comes from.
 
 ### Setup
 
-```bash
+```powershell
 git clone https://github.com/Hardy999/agri-finance-analytics.git
 cd agri-finance-analytics
-
-python -m venv .venv
-.venv\Scripts\activate          # Windows
-pip install -r requirements.txt
-
-copy config.example.ini config.ini   # then edit config.ini for your machine
-python src/db.py                     # connection test
+.\setup.ps1
 ```
+
+That is the whole thing. `setup.ps1` creates the virtual environment, installs
+the exact versions recorded in `requirements.lock.txt`, detects your SQL Server
+instance and ODBC driver and writes `config.ini`, then runs a connection test.
+It is safe to run more than once — an existing `.venv` is reused rather than
+rebuilt. Pass `-Force` to rebuild it from scratch.
+
+**If PowerShell refuses to run it**, you will see
+*"cannot be loaded because running scripts is disabled on this system"*.
+Windows blocks `.ps1` files by default and the script cannot exempt itself.
+Either run it this way:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup.ps1
+```
+
+or allow locally-written scripts for your account, once:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+<details>
+<summary>Doing it by hand instead</summary>
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.lock.txt
+copy config.example.ini config.ini   # then edit it for your machine
+python src\db.py                     # connection test
+```
+</details>
+
+### What is deliberately not in this repository
+
+Three things are missing on purpose, each for a different reason:
+
+- **The data.** Excluded for size, because some source licences permit use but
+  not redistribution, and — the real reason — because if the data is not
+  committed then getting it requires running the ingestion scripts, which
+  keeps those scripts continuously proven. See `docs/SOURCES.md`.
+- **`config.ini`.** Machine-specific, and the file where a password would live
+  if one were ever added. `setup.ps1` generates it; `config.example.ini` is the
+  committed template that documents what each setting means.
+- **`.venv/`.** Thousands of files, rebuildable from `requirements.lock.txt` in
+  one command.
 
 <!-- Full end-to-end run instructions are added at Phase 7 and verified by
      cloning into a fresh folder and following them literally. -->
@@ -91,6 +132,7 @@ powerbi/           the .pbix report
 docs/              SOURCES.md, cleaning log, decision memo
 phases/            one folder per phase, each with a Word document explaining
                    what was done in that phase and why
+setup.ps1          one-command environment setup for a fresh clone
 README.md
 ```
 

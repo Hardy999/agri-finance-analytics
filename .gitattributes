@@ -1,0 +1,37 @@
+# =============================================================================
+# .gitattributes
+#
+# Line endings are a real hazard for this repository, and one that cost time.
+#
+# setup.ps1 was authored with Unix (LF) line endings. Windows PowerShell 5.1
+# mis-parses a .ps1 with LF endings in some constructs - it fell out of string
+# context mid-file and tried to execute the prose inside a comment block. The
+# script had passed a syntax check under PowerShell 7 on Linux, where LF is
+# fine, so the check confirmed nothing about the environment it would run in.
+#
+# * text=auto lets Git normalise text files to LF in the repository and check
+# them out with the platform convention. The explicit .ps1 rule forces CRLF on
+# checkout regardless of platform, because that is what Windows PowerShell
+# expects and a stranger cloning this will be on Windows.
+#
+# The script itself no longer depends on line endings - the here-strings that
+# broke were replaced with string arrays. This file is the second line of
+# defence, not the fix.
+# =============================================================================
+
+* text=auto
+
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+*.py   text eol=lf
+*.sh   text eol=lf
+
+# Binary: never normalise, never diff as text.
+*.docx binary
+*.xlsx binary
+*.pbix binary
+*.png  binary
+*.jpg  binary
+*.pdf  binary
