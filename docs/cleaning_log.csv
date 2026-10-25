@@ -1,0 +1,18 @@
+rule,file,rows_in,rows_affected,rows_out,action
+P3,prices,37765,37765,37765,date replaced by month (first day); every date was the 15th
+P1,prices,37765,89,37676,dropped 24 markets present only in 2014; 20 markets remain
+P4,prices,37676,4946,37676,"added unit_kg and price_per_kg; rows with no weight kept, per-kg left empty"
+P6,prices,37676,37676,37676,usdprice column removed; 92 values were wrong by 10x or 100x
+P7,prices,37676,2005,37676,"outlier_flag added; 2005 flagged, 38 could not be tested; none dropped"
+P8,prices,37676,473,37676,series_suspect added: cassava wholesale from 2019; rows kept
+P9,prices,37676,15,37676,unit_suspect added: bag-unit prices that look per-kg; not corrected
+X2,prices,37676,16456,37676,"crop column added for the 6 scope crops; 21,220 other rows left empty"
+P10,price_coverage,37676,229,5089,"no months filled; 5,089 series-years written, 229 of them with 0 months"
+P2,markets,93,73,20,kept markets with prices; short_panel flag on 5
+C1,calendar,3068,3034,34,"read with sep=';'; eos_e renamed, comma stripped, made whole numbers; Ghana rows kept"
+C2,calendar,34,4,34,regions upper-cased; West -> WESTERN; all 10 match prices
+C3,calendar,34,4,38,4 maize rows borrowed and labelled in calendar_source; 34 observed
+C4,calendar,38,7,38,harvest_crosses_year added; dekads left as published
+F1,faostat,1536,1536,1536,item code kept as text; 5 single-value columns dropped; Note kept
+F2,faostat,1536,150,1536,all 8 items kept; 150 blank values left blank (not zero); flag kept
+B1,bog,130,0,130,effective_date parsed and used as key; one row per decision; no monthly fill
