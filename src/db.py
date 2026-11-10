@@ -55,7 +55,10 @@ def load_config():
         )
 
     parser = configparser.ConfigParser()
-    parser.read(CONFIG_PATH)
+
+    # utf-8: the file's comments contain em dashes. Without this, Windows reads
+    # it as cp1252, which works for an em dash only by coincidence.
+    parser.read(CONFIG_PATH,encoding="utf-8")
     return parser["sqlserver"]
 
 
@@ -90,8 +93,10 @@ def build_connection_url(cfg):
     return f"mssql+pyodbc:///?odbc_connect={quote_plus(odbc_str)}"
 
 
-def get_engine(echo=False):
+def get_engine(echo=False, fast_executemany=False):
     """Return a SQLAlchemy engine for this project's database.
+        fast_executemany=True sends rows to SQL Server in batches. load.py uses
+    it; off by default so every other caller behaves exactly as in Phase 0.
 
     An 'engine' is a connection factory, not a connection. It manages a pool
     of connections and hands one out when a query runs. This matters because
@@ -101,7 +106,7 @@ def get_engine(echo=False):
     returns something unexpected and you want to see what actually ran.
     """
     cfg = load_config()
-    return create_engine(build_connection_url(cfg), echo=echo)
+    return create_engine(build_connection_url(cfg), echo=echo,fast_executemany=fast_executemany)
 
 
 if __name__ == "__main__":
